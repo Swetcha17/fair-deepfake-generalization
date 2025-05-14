@@ -1,42 +1,20 @@
 # Reducing Demographic Bias in Open-Set Deepfake Detection
 
-This project investigates how racial demographic bias affects the performance of deepfake detection systems in open-set conditions using **softmax thresholding**. Real images are sourced from the FairFace dataset, and synthetic fake images are generated using **FaceSwap** via the [SimSwap](https://github.com/neuralchen/SimSwap) framework. We compare models trained on single-race and multi-race datasets, evaluating their ability to generalize to unseen demographic groups.
-
----
+This project explores the effect of racial demographic bias on the generalization of deepfake detection models under open-set conditions. Using **softmax thresholding**, we evaluate several CNN and transformer models trained on real faces from the **FairFace** dataset and fake images generated via **SimSwap** (FaceSwap). Both single-race and multi-race training setups are compared.
 
 ## Dataset Overview
 
-### Real Face Images
-- Sourced from [FairFace Dataset](https://github.com/joojs/fairface)
-- Cropped and organized by race:  
-  - **White**
-  - **Black**
-  - **Indian**
-  - **East Asian**
-  - **Latino Hispanic**
-  - **Southeast Asian**
-  - **Middle Eastern**
-- Preprocessing included resizing, cropping, and organizing into PyTorch-compatible folder structures.
+### Real Images
+- Sourced from [FairFace](https://github.com/joojs/fairface)
+- Organized by race:
+  - White, Black, Indian, East Asian, Latino Hispanic, Southeast Asian, Middle Eastern
+- Preprocessed to align/crop and organized into PyTorch-compatible folders.
 
-### Fake Face Images (SimSwap FaceSwap)
-- Generated fake faces using the **SimSwap** framework.
-- Each fake was created by swapping one real face with another of the **same race and gender**.
-- The number of fake images per race:
-  - **White**: 1,000  
-  - **Black**: 200  
-  - **Indian**: 200  
-  - **East Asian**: 200  
-  - **Latino Hispanic**: 200
-  - **Southeast Asian**: 200
-  - **Middle Eastern**: 200  
+### Fake Images
 
-- Face swapping was done using a CSV mapping:
-  ```
-  source, target, output
-  real1.jpg, real2.jpg, fake_output.jpg
-  ```
-
-  With the following command:
+- Generated using [SimSwap](https://github.com/neuralchen/SimSwap)
+- **Intra-race, same-gender** face swaps
+- Sample command used:
   ```bash
   python test_one_image.py --isTrain false \
     --name people \
@@ -46,84 +24,53 @@ This project investigates how racial demographic bias affects the performance of
     --output_path path/to/output.jpg
   ```
 
----
+| Race             | # Fake Images |
+|------------------|---------------|
+| White            | 1000          |
+| Black            | 200           |
+| Indian           | 200           |
+| East Asian       | 200           |
+| Latino Hispanic  | 200           |
+| Southeast Asian  | 200           |
 
-## Models Trained
+## Trained Models
 
-Each model was trained for both **single-race** and **multi-race** settings:
+Each model was trained in two settings:  
+`*_Single.ipynb` → trained on a single race  
+`*_Multi.ipynb` → trained on all races combined
 
-| Model Name     | Description                      |
-|----------------|----------------------------------|
-| SimpleCNN      | Custom 3-layer convolutional net |
-| ResNet18       | Lightweight residual network     |
-| ResNet50       | Deeper residual model            |
-| DenseNet121    | Dense connectivity between layers|
-| EfficientNetV2 | Scalable, efficient CNN          |
-| ViT            | Vision Transformer               |
+| Model           | Notebook                          |
+|----------------|------------------------------------|
+| SimpleCNN       | `Simple_CNN_Single.ipynb`, `Simple_CNN_Multi.ipynb` |
+| ResNet18        | `ResNet18_Single.ipynb`, `ResNet18_Multi.ipynb`     |
+| ResNet50        | `ResNet50_Single.ipynb`, `ResNet50_Multi.ipynb`     |
+| DenseNet121     | `DenseNet121_Single.ipynb`, `DenseNet121_Multi.ipynb` |
+| EfficientNetV2  | `EfficientNetV2_Single.ipynb`, `EfficientNetV2_Multi.ipynb` |
+| Vision Transformer (ViT) | `ViT_Single.ipynb`, `ViT_Multi.ipynb`       |
 
----
+## Evaluation Metrics
 
-## Evaluation & Metrics
+- Softmax thresholding for open-set recognition
+- Accuracy
+- AUROC (Area Under ROC)
+- F1-score
+- Diversity Score (accuracy std. dev. across race groups)
+- t-SNE Visualizations
 
-We evaluated all models using:
+## Running the Project
 
-- **Softmax thresholding** for open-set detection
-- **Accuracy**
-- **AUROC**
-- **F1-score**
-- **Diversity Score** (accuracy std. dev. across races)
-
-Each model was tested on all 5 race groups to measure generalization.
-
----
-
-## Folder Structure
-
-```
-FairFace_By_Race/
-├── White/
-│   ├── real/
-│   └── fake/
-├── Black/
-├── Indian/
-├── East_Asian/
-├── Latino_Hispanic/
-Trained_Models/
-Evaluation/
-Plots/
-```
-
----
-
-## Running the Code
-
-1. Clone and install:
+1. Clone the repository:
    ```bash
-   git clone https://github.com/Swetcha17/deepfake-bias-openset.git
-   cd deepfake-bias-openset
-   pip install -r requirements.txt
+   git clone https://github.com/Swetcha17/fair-deepfake-generalization.git
+   cd fair-deepfake-generalization
    ```
+2. Run the Jupyter Notebook files
 
-2. Prepare the dataset as shown above.
-
-3. Train a model:
-   ```bash
-   python train_resnet18.py
-   ```
-
-4. Evaluate open-set detection:
-   ```bash
-   python evaluate_openset.py
-   ```
-
-5. View results:
-   - Plots: `Plots/`
-   - Evaluation tables: `Evaluation/`
-
----
+3. View results:
+   - t-SNE plots → `Plots/`
+   - Evaluation tables → `Evaluation/open_set_results.csv`
 
 ## Author
-
 **Swetcha Reddy Tukkani**  
-M.S. in Computer Science 
-Lehigh University  
+M.S. in Computer Science  
+Lehigh University
